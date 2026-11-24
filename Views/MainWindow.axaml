@@ -1,0 +1,126 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:HubLink.ViewModels"
+        xmlns:models="using:HubLink.Models"
+        x:Class="HubLink.Views.MainWindow" x:DataType="vm:MainViewModel"
+        Title="HubLink" Width="1080" Height="700" MinWidth="900" MinHeight="590"
+        WindowStartupLocation="CenterScreen" Background="#F1F5F7" Foreground="#142C39"
+        FontFamily="{StaticResource InterFont}">
+    <Window.Styles>
+        <Style Selector="TextBlock.muted">
+            <Setter Property="Foreground" Value="#475E6C" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="BorderBrush" Value="#D9E3E8" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Border.stat">
+            <Setter Property="Background" Value="#E4EEF0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="14,8" />
+        </Style>
+        <Style Selector="TextBlock.feedback.error">
+            <Setter Property="Foreground" Value="#9E2B22" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <Border Background="#143340" Padding="24,16">
+            <StackPanel Spacing="2">
+                <TextBlock Text="HubLink" FontSize="27" FontWeight="SemiBold" Foreground="White" />
+                <TextBlock Text="Regional logistics · Shipment monitoring" Foreground="#D1E2E7" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Classes="card" Margin="24,16,24,10" Padding="14">
+            <StackPanel Spacing="8">
+                <Grid ColumnDefinitions="*,12,104,12,139,12,98,12,Auto"
+                      IsEnabled="{Binding CanEditSettings}">
+                    <StackPanel Spacing="4">
+                        <TextBlock Classes="muted" Text="Service address" />
+                        <TextBox Text="{Binding Address, Mode=TwoWay}" AutomationProperties.Name="Service address" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Classes="muted" Text="Branch code" />
+                        <TextBox Text="{Binding Branch, Mode=TwoWay}" AutomationProperties.Name="Branch code" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="4" Spacing="4">
+                        <TextBlock Classes="muted" Text="API mode" />
+                        <ComboBox ItemsSource="{Binding Scenarios}" SelectedItem="{Binding Scenario, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch" AutomationProperties.Name="API mode" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="6" Spacing="4">
+                        <TextBlock Classes="muted" Text="Timeout (s)" />
+                        <ComboBox ItemsSource="{Binding Timeouts}" SelectedItem="{Binding TimeoutSeconds, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch" AutomationProperties.Name="Timeout in seconds" />
+                    </StackPanel>
+                    <Button Grid.Column="8" VerticalAlignment="Bottom" Classes="accent"
+                            Content="Refresh shipments" Command="{Binding RefreshCommand}" />
+                </Grid>
+                <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsLoading}" />
+                <TextBlock Classes="feedback" Classes.error="{Binding RetrievalFailed}" Text="{Binding RetrievalMessage}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*,*" Margin="24,0,24,10">
+            <Border Grid.Column="0" Classes="stat" Margin="0,0,10,0"><StackPanel Spacing="2"><TextBlock Classes="muted" Text="Total"/><TextBlock FontSize="26" FontWeight="SemiBold" Text="{Binding Total}"/></StackPanel></Border>
+            <Border Grid.Column="1" Classes="stat" Margin="0,0,10,0"><StackPanel Spacing="2"><TextBlock Classes="muted" Text="Pending"/><TextBlock FontSize="26" FontWeight="SemiBold" Text="{Binding Pending}"/></StackPanel></Border>
+            <Border Grid.Column="2" Classes="stat" Margin="0,0,10,0"><StackPanel Spacing="2"><TextBlock Classes="muted" Text="InTransit"/><TextBlock FontSize="26" FontWeight="SemiBold" Text="{Binding InTransit}"/></StackPanel></Border>
+            <Border Grid.Column="3" Classes="stat" Margin="0,0,10,0"><StackPanel Spacing="2"><TextBlock Classes="muted" Text="Delivered"/><TextBlock FontSize="26" FontWeight="SemiBold" Text="{Binding Delivered}"/></StackPanel></Border>
+            <Border Grid.Column="4" Classes="stat" Margin="0"><StackPanel Spacing="2"><TextBlock Classes="muted" Text="Exception"/><TextBlock FontSize="26" FontWeight="SemiBold" Text="{Binding Exceptions}"/></StackPanel></Border>
+        </Grid>
+
+        <Border Grid.Row="3" Classes="card" Margin="24,0,24,18" ClipToBounds="True">
+            <Grid RowDefinitions="Auto,Auto,*,Auto">
+                <Grid ColumnDefinitions="*,Auto,132,Auto" Margin="14,10" ColumnSpacing="9">
+                    <StackPanel Spacing="3" VerticalAlignment="Center">
+                        <TextBlock Text="Shipments" FontSize="17" FontWeight="SemiBold" />
+                        <TextBlock Classes="muted" Text="{Binding SnapshotLabel}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="Status filter" VerticalAlignment="Center" />
+                    <ComboBox Grid.Column="2" ItemsSource="{Binding StatusFilters}"
+                              SelectedItem="{Binding SelectedStatus, Mode=TwoWay}" IsEnabled="{Binding !IsExporting}"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Center" AutomationProperties.Name="Status filter" />
+                    <Button Grid.Column="3" Content="Export CSV" Command="{Binding ExportCommand}" VerticalAlignment="Center" />
+                </Grid>
+                <Border Grid.Row="1" Background="#DCE8EC" Padding="14,8">
+                    <Grid ColumnDefinitions="1.1*,1.5*,1.5*,1*,1.5*">
+                        <TextBlock Grid.Column="0" FontWeight="SemiBold" Text="Tracking number" />
+                <TextBlock Grid.Column="1" FontWeight="SemiBold" Text="Origin" />
+                <TextBlock Grid.Column="2" FontWeight="SemiBold" Text="Destination" />
+                <TextBlock Grid.Column="3" FontWeight="SemiBold" Text="Status" />
+                <TextBlock Grid.Column="4" FontWeight="SemiBold" Text="Last updated (UTC)" />
+                    </Grid>
+                </Border>
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding VisibleShipments}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:Shipment">
+                                <Border Padding="14,9" BorderThickness="0,0,0,1" BorderBrush="#E1EAEE">
+                                    <Grid ColumnDefinitions="1.1*,1.5*,1.5*,1*,1.5*">
+                                        <TextBlock Grid.Column="0" Text="{Binding TrackingNumber}" TextWrapping="Wrap" Margin="0,0,12,0" />
+                                <TextBlock Grid.Column="1" Text="{Binding Origin}" TextWrapping="Wrap" Margin="0,0,12,0" />
+                                <TextBlock Grid.Column="2" Text="{Binding Destination}" TextWrapping="Wrap" Margin="0,0,12,0" />
+                                <TextBlock Grid.Column="3" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,0,12,0" />
+                                <TextBlock Grid.Column="4" Text="{Binding DisplayUpdatedUtc}" TextWrapping="Wrap" Margin="0,0,12,0" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <Border Grid.Row="3" Background="#F4F8FA" Padding="14,9">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                        <TextBlock Classes="muted" Text="{Binding VisibleCount}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding ExportMessage}" TextWrapping="Wrap"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
+
