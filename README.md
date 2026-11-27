@@ -30,5 +30,5 @@ Use the **API mode** selector to switch to the instructor’s test endpoint. Try
 
 `ShipmentClient` sends HTTP GET requests, validates JSON, and converts it to shipment models. `MainViewModel` manages refresh state, filtering, summary counts, and export commands. `CsvExport` writes the report. The Avalonia view handles presentation and the native file picker.
 
-The project uses an Avalonia MVVM template and CommunityToolkit.Mvvm. OpenAI Codex assisted substantively with implementation, verification, and documentation. The instructor supplied the API and shipment fixtures.
+The project uses an Avalonia MVVM template and CommunityToolkit.Mvvm. AI-assisted development tools supported implementation, verification, and documentation. The instructor supplied the API and shipment fixtures.
 
