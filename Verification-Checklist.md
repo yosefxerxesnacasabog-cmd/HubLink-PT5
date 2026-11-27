@@ -15,3 +15,7 @@
 
 The included sample is the one-row BR-001 Exception export. Live is the startup API mode.
 
+
+## Status validation regression check
+
+On 2026-11-27, an in-memory HTTP response harness exercised the actual shipment client and refresh ViewModel. All four documented statuses were accepted. Numeric strings 4, -1, 999 and 0, lowercase pending, Unknown, a combined status, an empty string and null were rejected with invalid-data feedback. Failed refreshes retained the labeled previous data, summary counts remained consistent, and a subsequent valid refresh succeeded. This regression check uses synthetic responses; the supplied API integration results above were verified earlier.

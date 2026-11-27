@@ -45,7 +45,8 @@ public sealed class ShipmentClient(HttpClient http)
                 if (item is null || item.BranchCode != branch ||
                     string.IsNullOrWhiteSpace(item.TrackingNumber) || !trackingNumbers.Add(item.TrackingNumber) ||
                     string.IsNullOrWhiteSpace(item.Origin) || string.IsNullOrWhiteSpace(item.Destination) ||
-                    !Enum.TryParse<ShipmentStatus>(item.Status, out var status) || status.ToString() != item.Status ||
+                    !Enum.TryParse<ShipmentStatus>(item.Status, out var status) ||
+                    !Enum.IsDefined(status) || status.ToString() != item.Status ||
                     !DateTimeOffset.TryParse(item.LastUpdatedUtc, CultureInfo.InvariantCulture,
                         DateTimeStyles.None, out var updated) || updated.Offset != TimeSpan.Zero ||
                     !(item.LastUpdatedUtc!.EndsWith('Z') || item.LastUpdatedUtc.EndsWith("+00:00", StringComparison.Ordinal)))
